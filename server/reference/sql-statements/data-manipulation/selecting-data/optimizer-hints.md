@@ -127,22 +127,23 @@ If the [query\_cache\_type](../../../../ha-and-performance/optimization-and-tuni
 
 `USE INDEX`, `FORCE INDEX` and `IGNORE INDEX` constrain the query planning to a specific index. For further information about some of these options, see [How to force query plans](../../../../ha-and-performance/optimization-and-tuning/query-optimizations/index-hints-how-to-force-query-plans.md).
 
-## Expanded Optimizer Hints
+## Expanded (New-style) Optimizer Hints
 
 {% tabs %}
 {% tab title="Current" %}
-Hints are placed after the main statement verb.
+Hints are placed after the main statement verb. Syntax:
 
 ```sql
+SELECT /*+ hints */  ...
 UPDATE /*+ hints */ table ...;
 DELETE /*+ hints */ FROM table... ;
-SELECT /*+ hints */  ...
 ```
 
-They can also appear after the `SELECT` keyword in any subquery:
+They can also appear after the `SELECT` keyword in a subquery or a derived table:
 
 ```sql
 SELECT * FROM t1 WHERE a IN (SELECT /*+ hints */ ...)
+SELECT t1.* FROM t1, (SELECT /*+ hints */ a FROM t2 WHERE a < 3) as DT WHERE t1.a = DT.a
 ```
 
 There can be one or more hints separated with space:
@@ -167,9 +168,10 @@ Hints that are not ignored are kept in the query text (you can see them in `SHOW
 
 Hints can be:
 
-* global - they apply to whole query;
-* table-level - they apply to a table;
-* index-level - they apply to an index in a table.
+* global - they apply to the whole query;
+* query block level - they apply to a certain query block within a query;
+* table-level - they apply to a particular table within a query block;
+* index-level - they apply to a particular index in a table.
 
 #### **Table-Level Hints**
 
